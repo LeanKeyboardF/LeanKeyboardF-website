@@ -1,279 +1,608 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>LeanKeyboardF — Клавіатура для Android TV</title>
+<title>LeanKeyboardF — A Custom Keyboard for Android TV</title>
+<meta name="description" content="LeanKeyboardF extends the original keyboard project with additional customization tools, bug fixes and new features — while keeping the core experience intact.">
 
 <!-- Favicon / Logo -->
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/LeanKeyboardF/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png">
 
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Markdown parser (loaded before the inline script runs) -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+
 <style>
+/* =========================================================
+   DESIGN TOKENS
+========================================================= */
+
 :root {
-    --bg-color: #f6f7f9;
-    --text-color: #17181a;
-    --text-muted: #60646b;
-    --header-bg: rgba(255, 255, 255, 0.94);
-    --border-color: #ddd;
-    --card-bg: #ffffff;
-    --card-border: #ddd;
-    --button-bg: #222222;
-    --button-text: #ffffff;
-    --button-sec-bg: #ffffff;
-    --button-sec-text: #222222;
-    --button-sec-border: #222222;
-    --badge-bg: #e9eaec;
-    --code-bg: #f0f1f3;
-    --quote-border: #bbb;
-    --nav-mobile-bg: #ffffff;
+    --bg:              #ffffff;
+    --bg-alt:          #f6f7f9;
+    --surface:         #ffffff;
+    --surface-2:       #f9fafb;
+    --border:          #e6e8ec;
+    --border-strong:   #d3d7de;
+
+    --text:            #0b0d12;
+    --text-muted:      #626a76;
+
+    --accent:          #2563eb;
+    --accent-soft:     rgba(37, 99, 235, 0.10);
+
+    --btn-bg:          #0b0d12;
+    --btn-text:        #ffffff;
+    --btn-2-bg:        #ffffff;
+    --btn-2-text:      #0b0d12;
+    --btn-2-border:    #d3d7de;
+
+    --badge-bg:        #f0f1f4;
+    --badge-text:      #3a4048;
+    --code-bg:         #f4f5f7;
+
+    --shadow-sm:       0 1px 2px rgba(11,13,18,.05);
+    --shadow-md:       0 4px 16px rgba(11,13,18,.07);
+    --shadow-lg:       0 16px 40px rgba(11,13,18,.10);
+
+    --header-bg:       rgba(255,255,255,.78);
+
+    --skeleton-a:      #eceef1;
+    --skeleton-b:      #f6f7f9;
+
+    --radius-sm:       10px;
+    --radius-md:       14px;
+    --radius-lg:       20px;
+
+    --container:       1160px;
 }
 
 [data-theme="dark"] {
-    --bg-color: #121214;
-    --text-color: #e4e5e7;
-    --text-muted: #9a9ea6;
-    --header-bg: rgba(18, 18, 20, 0.94);
-    --border-color: #2d2f34;
-    --card-bg: #1c1d21;
-    --card-border: #2d2f34;
-    --button-bg: #ffffff;
-    --button-text: #121214;
-    --button-sec-bg: #2b2d33;
-    --button-sec-text: #ffffff;
-    --button-sec-border: #40434c;
-    --badge-bg: #2b2d33;
-    --code-bg: #25272c;
-    --quote-border: #555861;
-    --nav-mobile-bg: #1c1d21;
+    --bg:              #0a0b0e;
+    --bg-alt:          #0e1014;
+    --surface:         #131519;
+    --surface-2:       #171a1f;
+    --border:          #23262d;
+    --border-strong:   #33373f;
+
+    --text:            #eef0f3;
+    --text-muted:      #98a0ac;
+
+    --accent:          #60a5fa;
+    --accent-soft:     rgba(96, 165, 250, 0.14);
+
+    --btn-bg:          #ffffff;
+    --btn-text:        #0a0b0e;
+    --btn-2-bg:        #1b1e24;
+    --btn-2-text:      #eef0f3;
+    --btn-2-border:    #33373f;
+
+    --badge-bg:        #1f232a;
+    --badge-text:      #b6bdc8;
+    --code-bg:         #1a1d23;
+
+    --shadow-sm:       0 1px 2px rgba(0,0,0,.40);
+    --shadow-md:       0 4px 16px rgba(0,0,0,.45);
+    --shadow-lg:       0 16px 40px rgba(0,0,0,.55);
+
+    --header-bg:       rgba(10,11,14,.75);
+
+    --skeleton-a:      #1a1d23;
+    --skeleton-b:      #23272e;
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --bg-color: #121214;
-        --text-color: #e4e5e7;
-        --text-muted: #9a9ea6;
-        --header-bg: rgba(18, 18, 20, 0.94);
-        --border-color: #2d2f34;
-        --card-bg: #1c1d21;
-        --card-border: #2d2f34;
-        --button-bg: #ffffff;
-        --button-text: #121214;
-        --button-sec-bg: #2b2d33;
-        --button-sec-text: #ffffff;
-        --button-sec-border: #40434c;
-        --badge-bg: #2b2d33;
-        --code-bg: #25272c;
-        --quote-border: #555861;
-        --nav-mobile-bg: #1c1d21;
+        --bg:              #0a0b0e;
+        --bg-alt:          #0e1014;
+        --surface:         #131519;
+        --surface-2:       #171a1f;
+        --border:          #23262d;
+        --border-strong:   #33373f;
+
+        --text:            #eef0f3;
+        --text-muted:      #98a0ac;
+
+        --accent:          #60a5fa;
+        --accent-soft:     rgba(96, 165, 250, 0.14);
+
+        --btn-bg:          #ffffff;
+        --btn-text:        #0a0b0e;
+        --btn-2-bg:        #1b1e24;
+        --btn-2-text:      #eef0f3;
+        --btn-2-border:    #33373f;
+
+        --badge-bg:        #1f232a;
+        --badge-text:      #b6bdc8;
+        --code-bg:         #1a1d23;
+
+        --shadow-sm:       0 1px 2px rgba(0,0,0,.40);
+        --shadow-md:       0 4px 16px rgba(0,0,0,.45);
+        --shadow-lg:       0 16px 40px rgba(0,0,0,.55);
+
+        --header-bg:       rgba(10,11,14,.75);
+
+        --skeleton-a:      #1a1d23;
+        --skeleton-b:      #23272e;
     }
 }
 
-* {
-    box-sizing: border-box;
-}
+/* =========================================================
+   BASE
+========================================================= */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
     margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont,
-                 "Segoe UI", sans-serif;
-    background: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    transition: background-color 0.3s, color 0.3s;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color .3s ease, color .3s ease;
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; display: block; }
+
+::selection {
+    background: var(--accent);
+    color: #fff;
 }
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+.container {
+    width: min(var(--container), 100% - 40px);
+    margin-inline: auto;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 .header {
     position: sticky;
     top: 0;
     z-index: 100;
     background: var(--header-bg);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-color);
-    transition: background 0.3s, border-color 0.3s;
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-bottom: 1px solid var(--border);
+    transition: background .3s ease, border-color .3s ease;
 }
 
 .header-inner {
-    max-width: 1180px;
-    margin: auto;
-    min-height: 64px;
+    max-width: var(--container);
+    margin-inline: auto;
+    min-height: 68px;
     padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 24px;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 20px;
-    font-weight: 750;
+    gap: 11px;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    white-space: nowrap;
 }
 
 .logo img {
-    height: 32px;
+    height: 30px;
     width: auto;
     object-fit: contain;
 }
 
-.header-actions {
+.header-right {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 22px;
 }
 
 .nav {
     display: flex;
-    gap: 20px;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav a {
+    position: relative;
+    padding: 8px 12px;
+    border-radius: 8px;
     font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color .2s ease, background .2s ease;
 }
 
 .nav a:hover {
-    text-decoration: underline;
+    color: var(--text);
+    background: var(--badge-bg);
 }
 
-.theme-toggle {
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    color: var(--text-color);
-    padding: 6px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
+.icon-button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.3s, border-color 0.3s;
-}
-
-.menu-button {
-    display: none;
-    border: 0;
-    background: none;
-    font-size: 25px;
-    color: var(--text-color);
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: var(--radius-sm);
     cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    transition: background .2s ease, border-color .2s ease, transform .15s ease;
 }
 
-.container {
-    width: min(1180px, calc(100% - 32px));
-    margin: auto;
+.icon-button:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
 }
+
+.icon-button:active { transform: translateY(0); }
+
+.menu-button { display: none; }
+
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero {
-    padding: 90px 0 70px;
+    position: relative;
+    overflow: hidden;
+    padding: 104px 0 88px;
     text-align: center;
 }
 
+.hero::before {
+    content: "";
+    position: absolute;
+    top: -280px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 620px;
+    background: radial-gradient(closest-side, var(--accent-soft), transparent 72%);
+    pointer-events: none;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+    background-size: 36px 36px;
+    opacity: .55;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 75%);
+    pointer-events: none;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
+}
+
 .hero-logo {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 15px;
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 22px;
     object-fit: contain;
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,.14));
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    margin-bottom: 22px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    box-shadow: var(--shadow-sm);
+}
+
+.hero-eyebrow .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,.18);
 }
 
 .hero h1 {
     margin: 0;
-    font-size: clamp(38px, 6vw, 68px);
-    letter-spacing: -2px;
+    font-size: clamp(40px, 6.2vw, 72px);
+    font-weight: 800;
+    letter-spacing: -.035em;
+    line-height: 1.05;
 }
 
-.hero p {
-    max-width: 700px;
-    margin: 20px auto 30px;
-    font-size: 20px;
+.hero h1 .gradient {
+    background: linear-gradient(100deg, var(--accent), #7c3aed 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-subtitle {
+    max-width: 680px;
+    margin: 22px auto 0;
+    font-size: 18px;
     color: var(--text-muted);
+    text-wrap: pretty;
 }
 
 .buttons {
     display: flex;
     justify-content: center;
-    gap: 12px;
     flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 34px;
 }
 
 .button {
-    display: inline-block;
-    padding: 12px 22px;
-    border-radius: 12px;
-    border: 1px solid var(--button-bg);
-    background: var(--button-bg);
-    color: var(--button-text);
-    font-weight: 650;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 13px 26px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--btn-bg);
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    line-height: 1.2;
     cursor: pointer;
-    text-align: center;
-    max-width: 100%;
-    word-break: break-word;
-    transition: background 0.3s, color 0.3s;
+    white-space: nowrap;
+    transition: transform .18s ease, box-shadow .18s ease,
+                background .2s ease, border-color .2s ease, color .2s ease;
 }
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.button:active { transform: translateY(0); }
 
 .button.secondary {
-    background: var(--button-sec-bg);
-    color: var(--button-sec-text);
-    border: 1px solid var(--button-sec-border);
+    background: var(--btn-2-bg);
+    color: var(--btn-2-text);
+    border-color: var(--btn-2-border);
 }
+
+.button.secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.button.small {
+    padding: 9px 16px;
+    font-size: 13.5px;
+}
+
+/* Hero stats */
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 46px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 116px;
+    padding: 14px 22px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.stat:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+
+/* =========================================================
+   SECTIONS
+========================================================= */
 
 .section {
-    padding: 55px 0;
-    scroll-margin-top: 70px;
+    padding: 76px 0;
+    scroll-margin-top: 84px;
 }
 
-.section h2 {
-    margin-top: 0;
-    font-size: 30px;
+.section + .section {
+    border-top: 1px solid var(--border);
 }
+
+.section-head {
+    margin-bottom: 30px;
+}
+
+.section-head h2 {
+    margin: 0;
+    font-size: clamp(26px, 3.4vw, 34px);
+    font-weight: 700;
+    letter-spacing: -.03em;
+}
+
+.section-head p {
+    margin: 10px 0 0;
+    max-width: 640px;
+    color: var(--text-muted);
+    font-size: 15.5px;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
 
 .card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 18px;
-    padding: 25px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    transition: background 0.3s, border-color 0.3s;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
 }
 
-.grid {
+.grid-2 {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
 }
 
-.release,
-.issue {
+/* =========================================================
+   LIST ITEMS (releases / issues)
+========================================================= */
+
+.list-item {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 20px;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--border-color);
+    padding: 18px 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    transition: background .2s ease, border-color .2s ease;
 }
 
-.release:last-child,
-.issue:last-child {
-    border-bottom: 0;
+.list-item + .list-item {
+    border-top: 1px solid var(--border);
+    border-radius: 0;
 }
+
+.list-item:hover {
+    background: var(--surface-2);
+}
+
+.list-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.list-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -.015em;
+    word-break: break-word;
+}
+
+.list-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.list-meta .sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--border-strong);
+}
+
+/* =========================================================
+   BADGES
+========================================================= */
 
 .badge {
-    display: inline-block;
-    padding: 4px 9px;
-    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
     background: var(--badge-bg);
-    color: var(--text-color);
-    font-size: 12px;
+    color: var(--badge-text);
+    font-size: 11.5px;
     font-weight: 700;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
+
+.badge.accent {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.badge.success {
+    background: rgba(34,197,94,.12);
+    color: #16a34a;
+}
+
+/* =========================================================
+   LANGUAGES
+========================================================= */
 
 .language-tags {
     display: flex;
@@ -285,147 +614,394 @@ a {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--badge-bg);
-    color: var(--text-color);
-    padding: 8px 16px;
-    border-radius: 20px;
+    padding: 9px 16px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    border-radius: 999px;
     font-size: 14px;
-    font-weight: 600;
-    border: 1px solid var(--border-color);
+    font-weight: 550;
     line-height: 1.2;
+    transition: transform .18s ease, border-color .18s ease,
+                background .18s ease, box-shadow .18s ease;
 }
 
-.loading {
+.lang-badge:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.lang-badge .flag { font-size: 16px; line-height: 1; }
+
+.lang-badge .native {
     color: var(--text-muted);
+    font-weight: 500;
 }
 
-.error {
-    color: #b00020;
+/* =========================================================
+   CONTACTS
+========================================================= */
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
 }
+
+.contact {
+    display: block;
+    padding: 26px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform .2s ease, box-shadow .2s ease,
+                border-color .2s ease, background .2s ease;
+}
+
+.contact:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-lg);
+}
+
+.contact-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    font-size: 20px;
+}
+
+.contact strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -.015em;
+    margin-bottom: 4px;
+}
+
+.contact span {
+    font-size: 14px;
+    color: var(--text-muted);
+    word-break: break-word;
+}
+
+/* =========================================================
+   README / MARKDOWN
+========================================================= */
+
+.readme-content {
+    padding: 34px 38px;
+    line-height: 1.75;
+    overflow-wrap: break-word;
+}
+
+.readme-content > *:first-child { margin-top: 0; }
+.readme-content > *:last-child  { margin-bottom: 0; }
+
+.readme-content h1,
+.readme-content h2,
+.readme-content h3,
+.readme-content h4 {
+    letter-spacing: -.025em;
+    line-height: 1.25;
+    margin: 2em 0 .6em;
+    font-weight: 700;
+}
+
+.readme-content h1 {
+    font-size: 30px;
+    padding-bottom: .35em;
+    border-bottom: 1px solid var(--border);
+}
+
+.readme-content h2 {
+    font-size: 24px;
+    padding-bottom: .3em;
+    border-bottom: 1px solid var(--border);
+}
+
+.readme-content h3 { font-size: 19px; }
+.readme-content h4 { font-size: 16.5px; }
+
+.readme-content p,
+.readme-content ul,
+.readme-content ol {
+    margin: 0 0 1.1em;
+}
+
+.readme-content ul,
+.readme-content ol { padding-left: 1.4em; }
+
+.readme-content li { margin-bottom: .35em; }
+
+.readme-content a {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+.readme-content a:hover { text-decoration-thickness: 2px; }
 
 .readme-content img {
     max-width: 100%;
     height: auto;
-    border-radius: 12px;
-    display: block;
-    margin: 10px 0;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin: 1em 0;
 }
 
 .readme-content pre {
     overflow-x: auto;
-    padding: 15px;
+    padding: 16px 18px;
     background: var(--code-bg);
-    border-radius: 10px;
-    color: var(--text-color);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    line-height: 1.6;
 }
 
 .readme-content code {
-    font-family: monospace;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+                 Consolas, monospace;
+    font-size: .88em;
+}
+
+.readme-content :not(pre) > code {
+    padding: 2px 6px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
 }
 
 .readme-content blockquote {
-    margin-left: 0;
-    padding-left: 15px;
-    border-left: 4px solid var(--quote-border);
+    margin: 1.2em 0;
+    padding: 4px 0 4px 18px;
+    border-left: 3px solid var(--accent);
     color: var(--text-muted);
 }
 
-.contact-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+.readme-content blockquote p:last-child { margin-bottom: 0; }
+
+.readme-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.2em 0;
+    font-size: 14.5px;
 }
 
-.contact {
-    padding: 20px;
-    border: 1px solid var(--card-border);
-    background: var(--card-bg);
-    border-radius: 15px;
-    transition: background 0.3s, border-color 0.3s;
+.readme-content th,
+.readme-content td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    text-align: left;
 }
+
+.readme-content th {
+    background: var(--surface-2);
+    font-weight: 650;
+}
+
+.readme-content hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 2em 0;
+}
+
+/* =========================================================
+   STATES: loading / empty / error
+========================================================= */
+
+.skeleton-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.skeleton {
+    height: 16px;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        var(--skeleton-a) 25%,
+        var(--skeleton-b) 50%,
+        var(--skeleton-a) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton.title { height: 26px; width: 42%; }
+.skeleton.line  { width: 100%; }
+.skeleton.line.short { width: 68%; }
+.skeleton.block { height: 92px; border-radius: var(--radius-md); }
+
+@keyframes shimmer {
+    to { background-position: -200% 0; }
+}
+
+.state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 46px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.state-icon {
+    font-size: 30px;
+    line-height: 1;
+    opacity: .7;
+}
+
+.state-title {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.state.error .state-title { color: #dc2626; }
+
+[data-theme="dark"] .state.error .state-title { color: #f87171; }
+
+/* =========================================================
+   FOOTER
+========================================================= */
 
 footer {
-    border-top: 1px solid var(--border-color);
-    margin-top: 40px;
-    padding: 35px 0;
+    border-top: 1px solid var(--border);
+    background: var(--bg-alt);
+    padding: 46px 0;
+    margin-top: 20px;
+    transition: background .3s ease, border-color .3s ease;
+}
+
+.footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 650;
+    font-size: 15px;
+    letter-spacing: -.015em;
+}
+
+.footer-brand img { height: 24px; width: auto; }
+
+.footer-note {
+    font-size: 13.5px;
     color: var(--text-muted);
-    text-align: center;
+    text-align: right;
 }
 
-/* Markdown headings */
-
-.readme-content h1 {
-    font-size: 32px;
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-size: 13.5px;
+    color: var(--text-muted);
 }
 
-.readme-content h2 {
-    font-size: 27px;
-    margin-top: 40px;
+.footer-links a:hover { color: var(--text); text-decoration: underline; }
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+    .contact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-.readme-content h3 {
-    font-size: 22px;
-    margin-top: 30px;
-}
+@media (max-width: 760px) {
 
-/* Mobile responsive styles */
+    .container { width: min(var(--container), 100% - 32px); }
 
-@media (max-width: 700px) {
-
-    .header-inner {
-        min-height: 58px;
-    }
-
-    .menu-button {
-        display: block;
-    }
+    .menu-button { display: inline-flex; }
 
     .nav {
-        display: none;
         position: absolute;
+        top: 100%;
         left: 0;
         right: 0;
-        top: 58px;
-        background: var(--nav-mobile-bg);
-        padding: 15px 20px;
-        border-bottom: 1px solid var(--border-color);
+        display: none;
         flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        padding: 12px 16px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
     }
 
-    .nav.open {
-        display: flex;
+    .nav.open { display: flex; }
+
+    .nav a {
+        padding: 12px 14px;
+        font-size: 15px;
+        color: var(--text);
     }
 
-    .hero {
-        padding: 60px 0 45px;
-    }
+    .hero { padding: 72px 0 60px; }
 
-    .hero p {
-        font-size: 17px;
-    }
+    .hero-logo { width: 68px; height: 68px; }
 
-    .grid,
-    .contact-grid {
-        grid-template-columns: 1fr;
-    }
+    .hero-subtitle { font-size: 16.5px; }
 
-    .button {
-        display: block;
-        width: 100%;
-    }
+    .buttons { flex-direction: column; align-items: stretch; }
 
-    .buttons {
+    .button { width: 100%; }
+
+    .hero-stats { gap: 10px; }
+
+    .stat { min-width: 96px; padding: 12px 16px; }
+
+    .section { padding: 56px 0; }
+
+    .grid-2,
+    .contact-grid { grid-template-columns: 1fr; }
+
+    .card { padding: 22px; }
+
+    .readme-content { padding: 24px 20px; }
+
+    .list-item {
         flex-direction: column;
-    }
-
-    .section {
-        padding: 40px 0;
-    }
-
-    .release,
-    .issue {
         align-items: flex-start;
-        flex-direction: column;
+        gap: 14px;
+    }
+
+    .list-item .button { width: 100%; }
+
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+
+    .footer-note { text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
     }
 }
 </style>
@@ -433,196 +1009,263 @@ footer {
 
 <body>
 
+<!-- =========================
+     HEADER
+========================== -->
 <header class="header">
     <div class="header-inner">
 
-        <a class="logo" href="#">
-            <img src="https://raw.githubusercontent.com/LeanKeyboardF/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png" alt="LeanKeyboardF Logo">
+        <a class="logo" href="#top" aria-label="LeanKeyboardF home">
+            <img src="https://raw.githubusercontent.com/LeanKeyboardF/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png"
+                 alt="LeanKeyboardF logo">
             <span>LeanKeyboardF</span>
         </a>
 
-        <div class="header-actions">
-            <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <div class="header-right">
+            <nav class="nav" id="nav" aria-label="Main navigation">
+                <a href="#about">Overview</a>
+                <a href="#releases">Releases</a>
+                <a href="#issues">Issues</a>
+                <a href="#languages">Languages</a>
+                <a href="#contacts">Contact</a>
+            </nav>
+
+            <button class="icon-button" id="theme-toggle"
+                    type="button" aria-label="Toggle color theme">
                 🌙
             </button>
 
-            <button class="menu-button" onclick="toggleMenu()">
+            <button class="icon-button menu-button" id="menu-button"
+                    type="button" aria-label="Toggle menu"
+                    aria-expanded="false" aria-controls="nav">
                 ☰
             </button>
         </div>
-
-        <nav class="nav" id="nav">
-            <a href="#about">Про проект</a>
-            <a href="#releases">Релізи</a>
-            <a href="#issues">Проблеми</a>
-            <a href="#languages">Мови</a>
-            <a href="#contacts">Контакти</a>
-        </nav>
 
     </div>
 </header>
 
 
-<main>
+<main id="top">
 
+<!-- =========================
+     HERO
+========================== -->
 <section class="hero">
     <div class="container">
 
-        <img class="hero-logo" src="https://raw.githubusercontent.com/LeanKeyboardF/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png" alt="LeanKeyboardF Icon">
+        <img class="hero-logo"
+             src="https://raw.githubusercontent.com/LeanKeyboardF/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png"
+             alt="LeanKeyboardF icon">
 
-        <h1>LeanKeyboardF</h1>
+        <div class="hero-eyebrow">
+            <span class="dot"></span>
+            Built for Android TV
+        </div>
 
-        <p>
-            LeanKeyboardF aims to extend the original project with additional tools for keyboard customization, bug fixes, and new features while keeping the core experience intact.
+        <h1>
+            A leaner keyboard<br>
+            for <span class="gradient">Android TV</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            LeanKeyboardF extends the original project with additional
+            keyboard customization tools, bug fixes and new features —
+            while keeping the core experience intact.
         </p>
 
         <div class="buttons">
-            <a
-                class="button"
-                href="https://github.com/LeanKeyboardF/LeanKeyboardF/releases"
-                target="_blank">
-                Завантажити
+            <a class="button"
+               href="https://github.com/LeanKeyboardF/LeanKeyboardF/releases"
+               target="_blank" rel="noopener">
+                ⬇ Download latest release
             </a>
 
-            <a
-                class="button secondary"
-                href="https://github.com/LeanKeyboardF/LeanKeyboardF"
-                target="_blank">
-                GitHub
+            <a class="button secondary"
+               href="https://github.com/LeanKeyboardF/LeanKeyboardF"
+               target="_blank" rel="noopener">
+                View on GitHub
             </a>
+        </div>
+
+        <div class="hero-stats" id="hero-stats" hidden>
+            <div class="stat">
+                <span class="stat-value" id="stat-stars">—</span>
+                <span class="stat-label">Stars</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-forks">—</span>
+                <span class="stat-label">Forks</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat-issues">—</span>
+                <span class="stat-label">Open issues</span>
+            </div>
         </div>
 
     </div>
 </section>
 
 
-<!-- README SECTION -->
-
+<!-- =========================
+     ABOUT / README
+========================== -->
 <section class="section" id="about">
     <div class="container">
 
-        <h2>Про проект (README)</h2>
+        <div class="section-head">
+            <h2>Project overview</h2>
+            <p>
+                Everything you need to know about LeanKeyboardF —
+                sourced directly from the repository README.
+            </p>
+        </div>
 
-        <div class="card readme-content"
-             id="readme">
-
-            <div class="loading">
-                Завантаження README...
+        <div class="card readme-content" id="readme">
+            <div class="skeleton-wrap">
+                <div class="skeleton title"></div>
+                <div class="skeleton line"></div>
+                <div class="skeleton line"></div>
+                <div class="skeleton line short"></div>
+                <div class="skeleton block"></div>
             </div>
-
         </div>
 
     </div>
 </section>
 
 
-<!-- RELEASES SECTION -->
-
+<!-- =========================
+     RELEASES
+========================== -->
 <section class="section" id="releases">
     <div class="container">
 
-        <h2>Релізи</h2>
+        <div class="section-head">
+            <h2>Releases</h2>
+            <p>
+                The ten most recent builds published on GitHub,
+                including pre-releases.
+            </p>
+        </div>
 
         <div class="card" id="releases-list">
-
-            <div class="loading">
-                Завантаження релізів...
+            <div class="skeleton-wrap">
+                <div class="skeleton line"></div>
+                <div class="skeleton line short"></div>
+                <div class="skeleton line"></div>
+                <div class="skeleton line short"></div>
             </div>
-
         </div>
 
     </div>
 </section>
 
 
-<!-- ISSUES SECTION -->
-
+<!-- =========================
+     ISSUES
+========================== -->
 <section class="section" id="issues">
     <div class="container">
 
-        <h2>Проблеми та розробка</h2>
+        <div class="section-head">
+            <h2>Open issues</h2>
+            <p>
+                Currently tracked bugs, requests and discussions
+                from the issue tracker.
+            </p>
+        </div>
 
         <div class="card" id="issues-list">
-
-            <div class="loading">
-                Завантаження проблем...
+            <div class="skeleton-wrap">
+                <div class="skeleton line"></div>
+                <div class="skeleton line short"></div>
+                <div class="skeleton line"></div>
+                <div class="skeleton line short"></div>
             </div>
-
         </div>
 
     </div>
 </section>
 
 
-<!-- LANGUAGES SECTION -->
-
+<!-- =========================
+     LANGUAGES
+========================== -->
 <section class="section" id="languages">
     <div class="container">
 
-        <h2>Мови</h2>
+        <div class="section-head">
+            <h2>Supported languages</h2>
+            <p>
+                LeanKeyboardF ships with layouts and dictionaries
+                for the following languages.
+            </p>
+        </div>
 
         <div class="card">
-
             <div class="language-tags">
-                <span class="lang-badge">🇺🇦 Українська (Українська)</span>
-                <span class="lang-badge">🇬🇧 Англійська (English)</span>
-                <span class="lang-badge">🇦🇪 Арабська (العربية)</span>
-                <span class="lang-badge">🇧🇬 Болгарська (Български)</span>
-                <span class="lang-badge">🇩🇪 Німецька (Deutsch)</span>
-                <span class="lang-badge">🇬🇷 Грецька (Ελληνικά)</span>
-                <span class="lang-badge">🇪🇸 Іспанська (Español)</span>
-                <span class="lang-badge">🇮🇷 Перська (فارسی)</span>
-                <span class="lang-badge">🇫🇷 Французька (Français)</span>
-                <span class="lang-badge">🇮🇸 Ісландська (Íslenska)</span>
-                <span class="lang-badge">🇮🇹 Італійська (Italiano)</span>
-                <span class="lang-badge">🇳🇱 Нідерландська (Nederlands)</span>
-                <span class="lang-badge">🇷🇴 Румунська (Română)</span>
-                <span class="lang-badge">🇷🇺 Російська (Русский)</span>
-                <span class="lang-badge">🇸🇮 Словенська (Slovenščina)</span>
-                <span class="lang-badge">🇸🇪 Шведська (Svenska)</span>
-                <span class="lang-badge">🇹🇭 Тайська (ไทย)</span>
-                <span class="lang-badge">🇹🇷 Турецька (Türkçe)</span>
+                <span class="lang-badge"><span class="flag">🇬🇧</span> English</span>
+                <span class="lang-badge"><span class="flag">🇺🇦</span> Ukrainian <span class="native">(Українська)</span></span>
+                <span class="lang-badge"><span class="flag">🇦🇪</span> Arabic <span class="native">(العربية)</span></span>
+                <span class="lang-badge"><span class="flag">🇧🇬</span> Bulgarian <span class="native">(Български)</span></span>
+                <span class="lang-badge"><span class="flag">🇩🇪</span> German <span class="native">(Deutsch)</span></span>
+                <span class="lang-badge"><span class="flag">🇬🇷</span> Greek <span class="native">(Ελληνικά)</span></span>
+                <span class="lang-badge"><span class="flag">🇪🇸</span> Spanish <span class="native">(Español)</span></span>
+                <span class="lang-badge"><span class="flag">🇮🇷</span> Persian <span class="native">(فارسی)</span></span>
+                <span class="lang-badge"><span class="flag">🇫🇷</span> French <span class="native">(Français)</span></span>
+                <span class="lang-badge"><span class="flag">🇮🇸</span> Icelandic <span class="native">(Íslenska)</span></span>
+                <span class="lang-badge"><span class="flag">🇮🇹</span> Italian <span class="native">(Italiano)</span></span>
+                <span class="lang-badge"><span class="flag">🇳🇱</span> Dutch <span class="native">(Nederlands)</span></span>
+                <span class="lang-badge"><span class="flag">🇷🇴</span> Romanian <span class="native">(Română)</span></span>
+                <span class="lang-badge"><span class="flag">🇷🇺</span> Russian <span class="native">(Русский)</span></span>
+                <span class="lang-badge"><span class="flag">🇸🇮</span> Slovenian <span class="native">(Slovenščina)</span></span>
+                <span class="lang-badge"><span class="flag">🇸🇪</span> Swedish <span class="native">(Svenska)</span></span>
+                <span class="lang-badge"><span class="flag">🇹🇭</span> Thai <span class="native">(ไทย)</span></span>
+                <span class="lang-badge"><span class="flag">🇹🇷</span> Turkish <span class="native">(Türkçe)</span></span>
             </div>
-
         </div>
 
     </div>
 </section>
 
 
-<!-- CONTACTS SECTION -->
-
+<!-- =========================
+     CONTACTS
+========================== -->
 <section class="section" id="contacts">
     <div class="container">
 
-        <h2>Контакти</h2>
+        <div class="section-head">
+            <h2>Get in touch</h2>
+            <p>
+                Report a bug, request a feature or just say hello.
+            </p>
+        </div>
 
         <div class="contact-grid">
 
-            <a
-                class="contact"
-                href="https://github.com/LeanKeyboardF/LeanKeyboardF"
-                target="_blank">
+            <a class="contact"
+               href="https://github.com/LeanKeyboardF/LeanKeyboardF"
+               target="_blank" rel="noopener">
+                <span class="contact-icon">🐙</span>
                 <strong>GitHub</strong>
-                <br>
-                Вихідний код, проблеми та обговорення
+                <span>Source code, issues and discussions</span>
             </a>
 
-            <a
-                class="contact"
-                href="https://xdaforums.com/t/leankeyboardf.4799086/"
-                target="_blank">
-                <strong>XDA</strong>
-                <br>
-                Спільнота Android TV
+            <a class="contact"
+               href="https://xdaforums.com/t/leankeyboardf.4799086/"
+               target="_blank" rel="noopener">
+                <span class="contact-icon">💬</span>
+                <strong>XDA Forums</strong>
+                <span>Android TV community thread</span>
             </a>
 
-            <a
-                class="contact"
-                href="mailto:edytor.studio.sup@gmail.com">
-                <strong>Gmail</strong>
-                <br>
-                edytor.studio.sup@gmail.com
+            <a class="contact"
+               href="mailto:edytor.studio.sup@gmail.com">
+                <span class="contact-icon">✉️</span>
+                <strong>Email</strong>
+                <span>edytor.studio.sup@gmail.com</span>
             </a>
 
         </div>
@@ -633,390 +1276,375 @@ footer {
 </main>
 
 
+<!-- =========================
+     FOOTER
+========================== -->
 <footer>
-    <div class="container">
+    <div class="container footer-inner">
 
-        LeanKeyboardF · Відкритий вихідний код · Ліцензія MIT
+        <div class="footer-brand">
+            <img src="https://raw.githubusercontent.com/LeanKeyboardF/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png"
+                 alt="LeanKeyboardF logo">
+            <span>LeanKeyboardF</span>
+        </div>
 
-        <br><br>
+        <div class="footer-links">
+            <a href="https://github.com/LeanKeyboardF/LeanKeyboardF" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/LeanKeyboardF/LeanKeyboardF/releases" target="_blank" rel="noopener">Releases</a>
+            <a href="https://github.com/LeanKeyboardF/LeanKeyboardF/blob/master/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        </div>
 
-        Вміст автоматично завантажується з GitHub.
+        <div class="footer-note">
+            Content is loaded dynamically from GitHub.
+        </div>
 
     </div>
 </footer>
 
 
 <script>
-
-/* =========================
+/* =========================================================
    CONFIGURATION
-========================= */
+========================================================= */
 
 const OWNER = "LeanKeyboardF";
-const REPO = "LeanKeyboardF";
+const REPO  = "LeanKeyboardF";
+const BRANCH = "master";
 
-const API =
-    `https://api.github.com/repos/${OWNER}/${REPO}`;
+const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
+const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
 
+/* =========================================================
+   THEME
+========================================================= */
 
-/* =========================
-   THEME TOGGLE
-========================= */
+const THEME_KEY = "leankeyboardf-theme";
 
-function initTheme() {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-        document.documentElement.setAttribute("data-theme", savedTheme);
-    }
-    updateThemeIcon();
+function getSystemPrefersDark() {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute("data-theme");
-    let targetTheme = "dark";
-
-    if (currentTheme === "dark") {
-        targetTheme = "light";
-    } else if (currentTheme === "light") {
-        targetTheme = "dark";
+function applyTheme(theme) {
+    if (theme) {
+        document.documentElement.setAttribute("data-theme", theme);
     } else {
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        targetTheme = prefersDark ? "light" : "dark";
+        document.documentElement.removeAttribute("data-theme");
     }
-
-    document.documentElement.setAttribute("data-theme", targetTheme);
-    localStorage.setItem("theme", targetTheme);
     updateThemeIcon();
 }
 
 function updateThemeIcon() {
-    const toggleBtn = document.getElementById("theme-toggle");
-    if (!toggleBtn) return;
+    const btn = document.getElementById("theme-toggle");
+    if (!btn) return;
 
-    const currentTheme = document.documentElement.getAttribute("data-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const current = document.documentElement.getAttribute("data-theme");
+    const isDark = current === "dark" || (!current && getSystemPrefersDark());
 
-    const isDark = currentTheme === "dark" || (!currentTheme && prefersDark);
-    toggleBtn.textContent = isDark ? "☀️" : "🌙";
+    btn.textContent = isDark ? "☀️" : "🌙";
+    btn.setAttribute(
+        "aria-label",
+        isDark ? "Switch to light theme" : "Switch to dark theme"
+    );
 }
 
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-    if (!localStorage.getItem("theme")) {
-        updateThemeIcon();
-    }
-});
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    let next;
 
-initTheme();
+    if (current === "dark")      next = "light";
+    else if (current === "light") next = "dark";
+    else                          next = getSystemPrefersDark() ? "light" : "dark";
 
+    applyTheme(next);
+    localStorage.setItem(THEME_KEY, next);
+}
 
-/* =========================
-   MOBILE MENU TOGGLE
-========================= */
+function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved) applyTheme(saved);
+    else updateThemeIcon();
+
+    window.matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", () => {
+            if (!localStorage.getItem(THEME_KEY)) updateThemeIcon();
+        });
+}
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
 
 function toggleMenu() {
+    const nav  = document.getElementById("nav");
+    const btn  = document.getElementById("menu-button");
+    const open = nav.classList.toggle("open");
 
-    document
-        .getElementById("nav")
-        .classList.toggle("open");
-
+    btn.setAttribute("aria-expanded", String(open));
+    btn.textContent = open ? "✕" : "☰";
 }
 
+function closeMenu() {
+    const nav = document.getElementById("nav");
+    const btn = document.getElementById("menu-button");
 
-/* =========================
-   GITHUB API HELPER
-========================= */
+    nav.classList.remove("open");
+    btn.setAttribute("aria-expanded", "false");
+    btn.textContent = "☰";
+}
 
-async function github(endpoint) {
+/* =========================================================
+   UTILITIES
+========================================================= */
 
-    const response =
-        await fetch(`${API}${endpoint}`);
+function escapeHtml(text) {
+    return String(text)
+        .replaceAll("&",  "&amp;")
+        .replaceAll("<",  "&lt;")
+        .replaceAll(">",  "&gt;")
+        .replaceAll('"',  "&quot;")
+        .replaceAll("'",  "&#039;");
+}
+
+function decodeBase64Utf8(base64) {
+    const binary = atob(base64.replace(/\s/g, ""));
+    const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0));
+    return new TextDecoder("utf-8").decode(bytes);
+}
+
+function formatDate(isoString) {
+    if (!isoString) return "";
+    try {
+        return new Date(isoString).toLocaleDateString("en-GB", {
+            year: "numeric", month: "short", day: "numeric"
+        });
+    } catch {
+        return "";
+    }
+}
+
+function stateBlock(icon, title, modifier = "") {
+    return `
+        <div class="state ${modifier}">
+            <div class="state-icon">${icon}</div>
+            <div class="state-title">${escapeHtml(title)}</div>
+        </div>
+    `;
+}
+
+/* =========================================================
+   GITHUB API
+========================================================= */
+
+async function github(endpoint = "") {
+    const response = await fetch(`${API}${endpoint}`, {
+        headers: { "Accept": "application/vnd.github+json" }
+    });
 
     if (!response.ok) {
-
-        throw new Error(
-            `GitHub API error: ${response.status}`
-        );
-
+        throw new Error(`GitHub API error: ${response.status}`);
     }
 
     return response.json();
-
 }
 
+/* =========================================================
+   REPO STATS
+========================================================= */
 
-/* =========================
-   LOAD README CONTENT
-========================= */
-
-async function loadReadme() {
-
-    const element =
-        document.getElementById("readme");
+async function loadRepoStats() {
+    const wrapper = document.getElementById("hero-stats");
+    if (!wrapper) return;
 
     try {
+        const repo = await github();
 
-        const data =
-            await github("/readme");
+        document.getElementById("stat-stars").textContent  = repo.stargazers_count ?? 0;
+        document.getElementById("stat-forks").textContent  = repo.forks_count ?? 0;
+        document.getElementById("stat-issues").textContent = repo.open_issues_count ?? 0;
 
-        const markdown =
-            atob(
-                data.content.replace(/\n/g, "")
-            );
+        wrapper.hidden = false;
 
-        element.innerHTML =
-            marked.parse(
-                decodeURIComponent(
-                    escape(markdown)
-                )
-            );
+    } catch (error) {
+        console.warn("Could not load repo stats:", error);
+    }
+}
+
+/* =========================================================
+   README
+========================================================= */
+
+async function loadReadme() {
+    const element = document.getElementById("readme");
+
+    try {
+        const data     = await github("/readme");
+        const markdown = decodeBase64Utf8(data.content);
+
+        if (window.marked && typeof window.marked.parse === "function") {
+            element.innerHTML = window.marked.parse(markdown);
+        } else {
+            // Graceful fallback if the Markdown parser failed to load
+            element.innerHTML = `<pre>${escapeHtml(markdown)}</pre>`;
+        }
 
         fixRelativeImages();
 
     } catch (error) {
-
-        element.innerHTML =
-            `<p class="error">
-                Не вдалося завантажити README.
-             </p>`;
-
         console.error(error);
-
+        element.innerHTML = stateBlock("⚠️", "Could not load the README.", "error");
     }
-
 }
-
-/* =========================
-   FIX RELATIVE IMAGES IN README
-========================= */
 
 function fixRelativeImages() {
     const readme = document.getElementById("readme");
     if (!readme) return;
 
-    const images = readme.querySelectorAll("img");
-    const rawBase = `https://raw.githubusercontent.com/${OWNER}/${REPO}/master/`;
-
-    images.forEach(img => {
+    readme.querySelectorAll("img").forEach(img => {
         const src = img.getAttribute("src");
-        if (src && !src.startsWith("http://") && !src.startsWith("https://") && !src.startsWith("data:")) {
-            const cleanSrc = src.replace(/^\.\//, "").replace(/^\//, "");
-            img.src = rawBase + cleanSrc;
-        }
+        if (!src) return;
+
+        const isAbsolute = /^(https?:)?\/\//i.test(src) || src.startsWith("data:");
+        if (isAbsolute) return;
+
+        const clean = src.replace(/^\.\//, "").replace(/^\//, "");
+        img.src = RAW + clean;
+        img.loading = "lazy";
     });
+
+    readme.querySelectorAll("a[href^='#']").forEach(() => {});
 }
 
-
-/* =========================
-   LOAD RELEASES
-========================= */
+/* =========================================================
+   RELEASES
+========================================================= */
 
 async function loadReleases() {
-
-    const container =
-        document.getElementById("releases-list");
+    const container = document.getElementById("releases-list");
 
     try {
+        const releases = await github("/releases?per_page=10");
 
-        const releases =
-            await github(
-                "/releases?per_page=10"
-            );
-
-        if (!releases.length) {
-
-            container.innerHTML =
-                "<p>Релізів не знайдено.</p>";
-
+        if (!Array.isArray(releases) || releases.length === 0) {
+            container.innerHTML = stateBlock("📦", "No releases published yet.");
             return;
-
         }
 
-        container.innerHTML = "";
+        container.innerHTML = releases.map(release => {
+            const badge = release.prerelease
+                ? '<span class="badge accent">Pre-release</span>'
+                : '<span class="badge success">Stable</span>';
 
-        releases.forEach(
-            release => {
+            const name = release.name && release.name !== release.tag_name
+                ? `<span class="list-meta">${escapeHtml(release.name)}</span>`
+                : "";
 
-                const item =
-                    document.createElement("div");
-
-                item.className = "release";
-
-                item.innerHTML = `
-
-                    <div>
-
-                        <strong>
-                            ${escapeHtml(
-                                release.tag_name
-                            )}
-                        </strong>
-
-                        ${
-                            release.prerelease
-                            ? '<span class="badge">Пре-реліз</span>'
-                            : '<span class="badge">Реліз</span>'
-                        }
-
-                        <br>
-
-                        <small>
-                            ${new Date(
-                                release.published_at
-                            ).toLocaleDateString("uk-UA")}
-                        </small>
-
+            return `
+                <div class="list-item">
+                    <div class="list-main">
+                        <div class="list-title">
+                            ${escapeHtml(release.tag_name)}
+                            ${badge}
+                        </div>
+                        <div class="list-meta">
+                            <span>${formatDate(release.published_at)}</span>
+                            ${name ? '<span class="sep"></span>' + name : ""}
+                        </div>
                     </div>
-
-                    <a
-                        class="button secondary"
-                        href="${release.html_url}"
-                        target="_blank">
-
-                        Переглянути
-
+                    <a class="button secondary small"
+                       href="${release.html_url}"
+                       target="_blank" rel="noopener">
+                        View release
                     </a>
-
-                `;
-
-                container.appendChild(item);
-
-            }
-        );
+                </div>
+            `;
+        }).join("");
 
     } catch (error) {
-
-        container.innerHTML =
-            `<p class="error">
-                Не вдалося завантажити релізи.
-             </p>`;
-
         console.error(error);
-
+        container.innerHTML = stateBlock("⚠️", "Could not load releases.", "error");
     }
-
 }
 
-
-/* =========================
-   LOAD ISSUES
-========================= */
+/* =========================================================
+   ISSUES
+========================================================= */
 
 async function loadIssues() {
-
-    const container =
-        document.getElementById("issues-list");
+    const container = document.getElementById("issues-list");
 
     try {
+        const issues = await github("/issues?state=open&per_page=10");
+        const realIssues = (issues || []).filter(issue => !issue.pull_request);
 
-        const issues =
-            await github(
-                "/issues?state=open&per_page=10"
-            );
-
-        const realIssues =
-            issues.filter(
-                issue => !issue.pull_request
-            );
-
-        if (!realIssues.length) {
-
-            container.innerHTML =
-                "<p>Немає відкритих проблем.</p>";
-
+        if (realIssues.length === 0) {
+            container.innerHTML = stateBlock("✅", "No open issues. All clear!");
             return;
-
         }
 
-        container.innerHTML = "";
+        container.innerHTML = realIssues.map(issue => {
+            const labels = (issue.labels || [])
+                .slice(0, 2)
+                .map(label => `<span class="badge">${escapeHtml(label.name)}</span>`)
+                .join("");
 
-        realIssues.forEach(
-            issue => {
-
-                const item =
-                    document.createElement("div");
-
-                item.className = "issue";
-
-                item.innerHTML = `
-
-                    <div>
-
-                        <strong>
-                            ${escapeHtml(
-                                issue.title
-                            )}
-                        </strong>
-
-                        <br>
-
-                        <small>
-                            #${issue.number}
-                        </small>
-
+            return `
+                <div class="list-item">
+                    <div class="list-main">
+                        <div class="list-title">
+                            ${escapeHtml(issue.title)}
+                            ${labels}
+                        </div>
+                        <div class="list-meta">
+                            <span>#${issue.number}</span>
+                            <span class="sep"></span>
+                            <span>${formatDate(issue.created_at)}</span>
+                        </div>
                     </div>
-
-                    <a
-                        class="button secondary"
-                        href="${issue.html_url}"
-                        target="_blank">
-
-                        Переглянути
-
+                    <a class="button secondary small"
+                       href="${issue.html_url}"
+                       target="_blank" rel="noopener">
+                        View issue
                     </a>
-
-                `;
-
-                container.appendChild(item);
-
-            }
-        );
+                </div>
+            `;
+        }).join("");
 
     } catch (error) {
-
-        container.innerHTML =
-            `<p class="error">
-                Не вдалося завантажити проблеми.
-             </p>`;
-
         console.error(error);
-
+        container.innerHTML = stateBlock("⚠️", "Could not load issues.", "error");
     }
-
 }
 
+/* =========================================================
+   STARTUP
+========================================================= */
 
-/* =========================
-   SECURITY / SANITIZATION
-========================= */
+document.addEventListener("DOMContentLoaded", () => {
 
-function escapeHtml(text) {
+    initTheme();
 
-    return text
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    document.getElementById("theme-toggle")
+        ?.addEventListener("click", toggleTheme);
 
-}
+    document.getElementById("menu-button")
+        ?.addEventListener("click", toggleMenu);
 
+    // Close mobile menu after navigating to an anchor
+    document.querySelectorAll(".nav a").forEach(link => {
+        link.addEventListener("click", closeMenu);
+    });
 
-/* =========================
-   INITIALIZATION / STARTUP
-========================= */
+    // Close mobile menu when resizing to desktop
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 760) closeMenu();
+    });
 
-loadReadme();
-
-loadReleases();
-
-loadIssues();
-
+    loadReadme();
+    loadReleases();
+    loadIssues();
+    loadRepoStats();
+});
 </script>
-
-
-<!-- Markdown parser -->
-
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 </body>
 </html>
