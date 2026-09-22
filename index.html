@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LeanKeyboardF — Клавіатура для Android TV</title>
+
+<!-- Favicon / Logo -->
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/AmakerGame/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png">
+
+<style>
+:root {
+    --bg-color: #f6f7f9;
+    --text-color: #17181a;
+    --text-muted: #60646b;
+    --header-bg: rgba(255, 255, 255, 0.94);
+    --border-color: #ddd;
+    --card-bg: #ffffff;
+    --card-border: #ddd;
+    --button-bg: #222222;
+    --button-text: #ffffff;
+    --button-sec-bg: #ffffff;
+    --button-sec-text: #222222;
+    --button-sec-border: #222222;
+    --badge-bg: #e9eaec;
+    --code-bg: #f0f1f3;
+    --quote-border: #bbb;
+    --nav-mobile-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121214;
+    --text-color: #e4e5e7;
+    --text-muted: #9a9ea6;
+    --header-bg: rgba(18, 18, 20, 0.94);
+    --border-color: #2d2f34;
+    --card-bg: #1c1d21;
+    --card-border: #2d2f34;
+    --button-bg: #ffffff;
+    --button-text: #121214;
+    --button-sec-bg: #2b2d33;
+    --button-sec-text: #ffffff;
+    --button-sec-border: #40434c;
+    --badge-bg: #2b2d33;
+    --code-bg: #25272c;
+    --quote-border: #555861;
+    --nav-mobile-bg: #1c1d21;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg-color: #121214;
+        --text-color: #e4e5e7;
+        --text-muted: #9a9ea6;
+        --header-bg: rgba(18, 18, 20, 0.94);
+        --border-color: #2d2f34;
+        --card-bg: #1c1d21;
+        --card-border: #2d2f34;
+        --button-bg: #ffffff;
+        --button-text: #121214;
+        --button-sec-bg: #2b2d33;
+        --button-sec-text: #ffffff;
+        --button-sec-border: #40434c;
+        --badge-bg: #2b2d33;
+        --code-bg: #25272c;
+        --quote-border: #555861;
+        --nav-mobile-bg: #1c1d21;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--header-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.header-inner {
+    max-width: 1180px;
+    margin: auto;
+    min-height: 64px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.logo img {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+}
+
+.nav a:hover {
+    text-decoration: underline;
+}
+
+.theme-toggle {
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-color);
+    padding: 6px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.menu-button {
+    display: none;
+    border: 0;
+    background: none;
+    font-size: 25px;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.container {
+    width: min(1180px, calc(100% - 32px));
+    margin: auto;
+}
+
+.hero {
+    padding: 90px 0 70px;
+    text-align: center;
+}
+
+.hero-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+    object-fit: contain;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: clamp(38px, 6vw, 68px);
+    letter-spacing: -2px;
+}
+
+.hero p {
+    max-width: 700px;
+    margin: 20px auto 30px;
+    font-size: 20px;
+    color: var(--text-muted);
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: 1px solid var(--button-bg);
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-weight: 650;
+    cursor: pointer;
+    text-align: center;
+    max-width: 100%;
+    word-break: break-word;
+    transition: background 0.3s, color 0.3s;
+}
+
+.button.secondary {
+    background: var(--button-sec-bg);
+    color: var(--button-sec-text);
+    border: 1px solid var(--button-sec-border);
+}
+
+.section {
+    padding: 55px 0;
+    scroll-margin-top: 70px;
+}
+
+.section h2 {
+    margin-top: 0;
+    font-size: 30px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.release,
+.issue {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.release:last-child,
+.issue:last-child {
+    border-bottom: 0;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 8px;
+    background: var(--badge-bg);
+    color: var(--text-color);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.language-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.lang-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--badge-bg);
+    color: var(--text-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    line-height: 1.2;
+}
+
+.loading {
+    color: var(--text-muted);
+}
+
+.error {
+    color: #b00020;
+}
+
+.readme-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+    margin: 10px 0;
+}
+
+.readme-content pre {
+    overflow-x: auto;
+    padding: 15px;
+    background: var(--code-bg);
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+.readme-content code {
+    font-family: monospace;
+}
+
+.readme-content blockquote {
+    margin-left: 0;
+    padding-left: 15px;
+    border-left: 4px solid var(--quote-border);
+    color: var(--text-muted);
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.contact {
+    padding: 20px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    border-radius: 15px;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+footer {
+    border-top: 1px solid var(--border-color);
+    margin-top: 40px;
+    padding: 35px 0;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Markdown headings */
+
+.readme-content h1 {
+    font-size: 32px;
+}
+
+.readme-content h2 {
+    font-size: 27px;
+    margin-top: 40px;
+}
+
+.readme-content h3 {
+    font-size: 22px;
+    margin-top: 30px;
+}
+
+/* Mobile responsive styles */
+
+@media (max-width: 700px) {
+
+    .header-inner {
+        min-height: 58px;
+    }
+
+    .menu-button {
+        display: block;
+    }
+
+    .nav {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 58px;
+        background: var(--nav-mobile-bg);
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        flex-direction: column;
+    }
+
+    .nav.open {
+        display: flex;
+    }
+
+    .hero {
+        padding: 60px 0 45px;
+    }
+
+    .hero p {
+        font-size: 17px;
+    }
+
+    .grid,
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .button {
+        display: block;
+        width: 100%;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .section {
+        padding: 40px 0;
+    }
+
+    .release,
+    .issue {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-inner">
+
+        <a class="logo" href="#">
+            <img src="https://raw.githubusercontent.com/AmakerGame/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png" alt="LeanKeyboardF Logo">
+            <span>LeanKeyboardF</span>
+        </a>
+
+        <div class="header-actions">
+            <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                🌙
+            </button>
+
+            <button class="menu-button" onclick="toggleMenu()">
+                ☰
+            </button>
+        </div>
+
+        <nav class="nav" id="nav">
+            <a href="#about">Про проект</a>
+            <a href="#releases">Релізи</a>
+            <a href="#issues">Проблеми</a>
+            <a href="#languages">Мови</a>
+            <a href="#contacts">Контакти</a>
+        </nav>
+
+    </div>
+</header>
+
+
+<main>
+
+<section class="hero">
+    <div class="container">
+
+        <img class="hero-logo" src="https://raw.githubusercontent.com/AmakerGame/LeanKeyboardF/master/img/leankeykeyboard_logo_small.png" alt="LeanKeyboardF Icon">
+
+        <h1>LeanKeyboardF</h1>
+
+        <p>
+            LeanKeyboardF aims to extend the original project with additional tools for keyboard customization, bug fixes, and new features while keeping the core experience intact.
+        </p>
+
+        <div class="buttons">
+            <a
+                class="button"
+                href="https://github.com/AmakerGame/LeanKeyboardF/releases"
+                target="_blank">
+                Завантажити
+            </a>
+
+            <a
+                class="button secondary"
+                href="https://github.com/AmakerGame/LeanKeyboardF"
+                target="_blank">
+                GitHub
+            </a>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- README SECTION -->
+
+<section class="section" id="about">
+    <div class="container">
+
+        <h2>Про проект (README)</h2>
+
+        <div class="card readme-content"
+             id="readme">
+
+            <div class="loading">
+                Завантаження README...
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- RELEASES SECTION -->
+
+<section class="section" id="releases">
+    <div class="container">
+
+        <h2>Релізи</h2>
+
+        <div class="card" id="releases-list">
+
+            <div class="loading">
+                Завантаження релізів...
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ISSUES SECTION -->
+
+<section class="section" id="issues">
+    <div class="container">
+
+        <h2>Проблеми та розробка</h2>
+
+        <div class="card" id="issues-list">
+
+            <div class="loading">
+                Завантаження проблем...
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- LANGUAGES SECTION -->
+
+<section class="section" id="languages">
+    <div class="container">
+
+        <h2>Мови</h2>
+
+        <div class="card">
+
+            <div class="language-tags">
+                <span class="lang-badge">🇺🇦 Українська (Українська)</span>
+                <span class="lang-badge">🇬🇧 Англійська (English)</span>
+                <span class="lang-badge">🇦🇪 Арабська (العربية)</span>
+                <span class="lang-badge">🇧🇬 Болгарська (Български)</span>
+                <span class="lang-badge">🇩🇪 Німецька (Deutsch)</span>
+                <span class="lang-badge">🇬🇷 Грецька (Ελληνικά)</span>
+                <span class="lang-badge">🇪🇸 Іспанська (Español)</span>
+                <span class="lang-badge">🇮🇷 Перська (فارسی)</span>
+                <span class="lang-badge">🇫🇷 Французька (Français)</span>
+                <span class="lang-badge">🇮🇸 Ісландська (Íslenska)</span>
+                <span class="lang-badge">🇮🇹 Італійська (Italiano)</span>
+                <span class="lang-badge">🇳🇱 Нідерландська (Nederlands)</span>
+                <span class="lang-badge">🇷🇴 Румунська (Română)</span>
+                <span class="lang-badge">🇷🇺 Російська (Русский)</span>
+                <span class="lang-badge">🇸🇮 Словенська (Slovenščina)</span>
+                <span class="lang-badge">🇸🇪 Шведська (Svenska)</span>
+                <span class="lang-badge">🇹🇭 Тайська (ไทย)</span>
+                <span class="lang-badge">🇹🇷 Турецька (Türkçe)</span>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- CONTACTS SECTION -->
+
+<section class="section" id="contacts">
+    <div class="container">
+
+        <h2>Контакти</h2>
+
+        <div class="contact-grid">
+
+            <a
+                class="contact"
+                href="https://github.com/AmakerGame/LeanKeyboardF"
+                target="_blank">
+                <strong>GitHub</strong>
+                <br>
+                Вихідний код, проблеми та обговорення
+            </a>
+
+            <a
+                class="contact"
+                href="https://xdaforums.com/t/leankeyboardf.4799086/"
+                target="_blank">
+                <strong>XDA</strong>
+                <br>
+                Спільнота Android TV
+            </a>
+
+            <a
+                class="contact"
+                href="mailto:edytor.studio.sup@gmail.com">
+                <strong>Gmail</strong>
+                <br>
+                edytor.studio.sup@gmail.com
+            </a>
+
+        </div>
+
+    </div>
+</section>
+
+</main>
+
+
+<footer>
+    <div class="container">
+
+        LeanKeyboardF · Відкритий вихідний код · Ліцензія MIT
+
+        <br><br>
+
+        Вміст автоматично завантажується з GitHub.
+
+    </div>
+</footer>
+
+
+<script>
+
+/* =========================
+   CONFIGURATION
+========================= */
+
+const OWNER = "AmakerGame";
+const REPO = "LeanKeyboardF";
+
+const API =
+    `https://api.github.com/repos/${OWNER}/${REPO}`;
+
+
+/* =========================
+   THEME TOGGLE
+========================= */
+
+function initTheme() {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+    }
+    updateThemeIcon();
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    let targetTheme = "dark";
+
+    if (currentTheme === "dark") {
+        targetTheme = "light";
+    } else if (currentTheme === "light") {
+        targetTheme = "dark";
+    } else {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        targetTheme = prefersDark ? "light" : "dark";
+    }
+
+    document.documentElement.setAttribute("data-theme", targetTheme);
+    localStorage.setItem("theme", targetTheme);
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const toggleBtn = document.getElementById("theme-toggle");
+    if (!toggleBtn) return;
+
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    const isDark = currentTheme === "dark" || (!currentTheme && prefersDark);
+    toggleBtn.textContent = isDark ? "☀️" : "🌙";
+}
+
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!localStorage.getItem("theme")) {
+        updateThemeIcon();
+    }
+});
+
+initTheme();
+
+
+/* =========================
+   MOBILE MENU TOGGLE
+========================= */
+
+function toggleMenu() {
+
+    document
+        .getElementById("nav")
+        .classList.toggle("open");
+
+}
+
+
+/* =========================
+   GITHUB API HELPER
+========================= */
+
+async function github(endpoint) {
+
+    const response =
+        await fetch(`${API}${endpoint}`);
+
+    if (!response.ok) {
+
+        throw new Error(
+            `GitHub API error: ${response.status}`
+        );
+
+    }
+
+    return response.json();
+
+}
+
+
+/* =========================
+   LOAD README CONTENT
+========================= */
+
+async function loadReadme() {
+
+    const element =
+        document.getElementById("readme");
+
+    try {
+
+        const data =
+            await github("/readme");
+
+        const markdown =
+            atob(
+                data.content.replace(/\n/g, "")
+            );
+
+        element.innerHTML =
+            marked.parse(
+                decodeURIComponent(
+                    escape(markdown)
+                )
+            );
+
+        fixRelativeImages();
+
+    } catch (error) {
+
+        element.innerHTML =
+            `<p class="error">
+                Не вдалося завантажити README.
+             </p>`;
+
+        console.error(error);
+
+    }
+
+}
+
+/* =========================
+   FIX RELATIVE IMAGES IN README
+========================= */
+
+function fixRelativeImages() {
+    const readme = document.getElementById("readme");
+    if (!readme) return;
+
+    const images = readme.querySelectorAll("img");
+    const rawBase = `https://raw.githubusercontent.com/${OWNER}/${REPO}/master/`;
+
+    images.forEach(img => {
+        const src = img.getAttribute("src");
+        if (src && !src.startsWith("http://") && !src.startsWith("https://") && !src.startsWith("data:")) {
+            const cleanSrc = src.replace(/^\.\//, "").replace(/^\//, "");
+            img.src = rawBase + cleanSrc;
+        }
+    });
+}
+
+
+/* =========================
+   LOAD RELEASES
+========================= */
+
+async function loadReleases() {
+
+    const container =
+        document.getElementById("releases-list");
+
+    try {
+
+        const releases =
+            await github(
+                "/releases?per_page=10"
+            );
+
+        if (!releases.length) {
+
+            container.innerHTML =
+                "<p>Релізів не знайдено.</p>";
+
+            return;
+
+        }
+
+        container.innerHTML = "";
+
+        releases.forEach(
+            release => {
+
+                const item =
+                    document.createElement("div");
+
+                item.className = "release";
+
+                item.innerHTML = `
+
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(
+                                release.tag_name
+                            )}
+                        </strong>
+
+                        ${
+                            release.prerelease
+                            ? '<span class="badge">Пре-реліз</span>'
+                            : '<span class="badge">Реліз</span>'
+                        }
+
+                        <br>
+
+                        <small>
+                            ${new Date(
+                                release.published_at
+                            ).toLocaleDateString("uk-UA")}
+                        </small>
+
+                    </div>
+
+                    <a
+                        class="button secondary"
+                        href="${release.html_url}"
+                        target="_blank">
+
+                        Переглянути
+
+                    </a>
+
+                `;
+
+                container.appendChild(item);
+
+            }
+        );
+
+    } catch (error) {
+
+        container.innerHTML =
+            `<p class="error">
+                Не вдалося завантажити релізи.
+             </p>`;
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================
+   LOAD ISSUES
+========================= */
+
+async function loadIssues() {
+
+    const container =
+        document.getElementById("issues-list");
+
+    try {
+
+        const issues =
+            await github(
+                "/issues?state=open&per_page=10"
+            );
+
+        const realIssues =
+            issues.filter(
+                issue => !issue.pull_request
+            );
+
+        if (!realIssues.length) {
+
+            container.innerHTML =
+                "<p>Немає відкритих проблем.</p>";
+
+            return;
+
+        }
+
+        container.innerHTML = "";
+
+        realIssues.forEach(
+            issue => {
+
+                const item =
+                    document.createElement("div");
+
+                item.className = "issue";
+
+                item.innerHTML = `
+
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(
+                                issue.title
+                            )}
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            #${issue.number}
+                        </small>
+
+                    </div>
+
+                    <a
+                        class="button secondary"
+                        href="${issue.html_url}"
+                        target="_blank">
+
+                        Переглянути
+
+                    </a>
+
+                `;
+
+                container.appendChild(item);
+
+            }
+        );
+
+    } catch (error) {
+
+        container.innerHTML =
+            `<p class="error">
+                Не вдалося завантажити проблеми.
+             </p>`;
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================
+   SECURITY / SANITIZATION
+========================= */
+
+function escapeHtml(text) {
+
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================
+   INITIALIZATION / STARTUP
+========================= */
+
+loadReadme();
+
+loadReleases();
+
+loadIssues();
+
+</script>
+
+
+<!-- Markdown parser -->
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</body>
+</html>
